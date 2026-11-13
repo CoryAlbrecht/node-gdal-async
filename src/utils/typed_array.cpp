@@ -1,4 +1,5 @@
 #include "typed_array.hpp"
+#include "typed_array_contents.hpp"
 
 #if GDAL_VERSION_MAJOR > 3 || (GDAL_VERSION_MAJOR == 3 && GDAL_VERSION_MINOR >= 11)
 #include <cpl_float.h>
@@ -167,56 +168,56 @@ void *TypedArray::Validate(Local<Object> obj, GDALDataType type, int64_t min_len
   }
   switch (type) {
     case GDT_Byte: {
-      Nan::TypedArrayContents<GByte> contents(obj);
+      TypedArrayContents<GByte> contents(obj);
       if (ValidateLength(contents.length(), min_length)) return NULL;
       return *contents;
     }
     case GDT_Int16: {
-      Nan::TypedArrayContents<GInt16> contents(obj);
+      TypedArrayContents<GInt16> contents(obj);
       if (ValidateLength(contents.length(), min_length)) return NULL;
       return *contents;
     }
     case GDT_UInt16: {
-      Nan::TypedArrayContents<GUInt16> contents(obj);
+      TypedArrayContents<GUInt16> contents(obj);
       if (ValidateLength(contents.length(), min_length)) return NULL;
       return *contents;
     }
     case GDT_Int32: {
-      Nan::TypedArrayContents<GInt32> contents(obj);
+      TypedArrayContents<GInt32> contents(obj);
       if (ValidateLength(contents.length(), min_length)) return NULL;
       return *contents;
     }
     case GDT_UInt32: {
-      Nan::TypedArrayContents<GUInt32> contents(obj);
+      TypedArrayContents<GUInt32> contents(obj);
       if (ValidateLength(contents.length(), min_length)) return NULL;
       return *contents;
     }
 #if GDAL_VERSION_MAJOR > 3 || (GDAL_VERSION_MAJOR == 3 && GDAL_VERSION_MINOR >= 5)
     case GDT_Int64: {
-      Nan::TypedArrayContents<GInt64> contents(obj);
+      TypedArrayContents<GInt64> contents(obj);
       if (ValidateLength(contents.length(), min_length)) return NULL;
       return *contents;
     }
     case GDT_UInt64: {
-      Nan::TypedArrayContents<GUInt64> contents(obj);
+      TypedArrayContents<GUInt64> contents(obj);
       if (ValidateLength(contents.length(), min_length)) return NULL;
       return *contents;
     }
 #endif
 #if GDAL_VERSION_MAJOR > 3 || (GDAL_VERSION_MAJOR == 3 && GDAL_VERSION_MINOR >= 11)
     case GDT_Float16: {
-      Nan::TypedArrayContents<GFloat16> contents(obj);
+      TypedArrayContents<GFloat16> contents(obj);
       if (ValidateLength(contents.length(), min_length)) return NULL;
       return *contents;
     }
 #endif
     case GDT_Float32: {
-      Nan::TypedArrayContents<float> contents(obj);
+      TypedArrayContents<float> contents(obj);
       if (ValidateLength(contents.length(), min_length)) return NULL;
       return *contents;
     }
     case GDT_Float64: {
-      Nan::TypedArrayContents<double> contents(obj);
+      TypedArrayContents<double> contents(obj);
       if (ValidateLength(contents.length(), min_length)) return NULL;
       return *contents;
     }
