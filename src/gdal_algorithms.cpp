@@ -5,6 +5,7 @@
 #include "gdal_rasterband.hpp"
 #include "utils/number_list.hpp"
 #include "utils/typed_array.hpp"
+#include "utils/typed_array_contents.hpp"
 
 #include "node_gdal.h"
 
@@ -577,14 +578,14 @@ NAN_METHOD(Algorithms::addPixelFunc) {
   Local<Object> arg;
   NODE_ARG_OBJECT(1, "pixelFn", arg);
 
-  Nan::TypedArrayContents<uint64_t> magic(arg);
+  TypedArrayContents<uint64_t> magic(arg);
 
   if (magic.length() < 1 || **magic != NODE_GDAL_CAPI_MAGIC) {
     Nan::ThrowTypeError("pixelFn must be a native code pixel function");
     return;
   }
 
-  Nan::TypedArrayContents<uint8_t> data(arg);
+  TypedArrayContents<uint8_t> data(arg);
 
 #if GDAL_VERSION_MAJOR > 3 || (GDAL_VERSION_MAJOR == 3 && GDAL_VERSION_MINOR >= 5)
   pixel_func *desc = reinterpret_cast<pixel_func *>(*data);
@@ -825,7 +826,7 @@ NAN_METHOD(Algorithms::toPixelFunc) {
     Nan::ThrowError("Failed creating TypedArray");
     return;
   }
-  Nan::TypedArrayContents<GByte> contents(r);
+  TypedArrayContents<GByte> contents(r);
   node_gdal::pixel_func *desc = reinterpret_cast<node_gdal::pixel_func *>(*contents);
 
   desc->magic = NODE_GDAL_CAPI_MAGIC;
