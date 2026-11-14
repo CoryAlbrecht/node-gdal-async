@@ -3,11 +3,29 @@
 		"common.gypi"
 	],
 	"variables": {
+		# Nested so the conditions below can test runtime (a sibling variable
+		# is not yet defined when this dict's own conditions are evaluated).
+		"variables": {
+			"runtime%": "node"
+		},
+		"runtime%": "<(runtime)",
 		"shared_gdal%": "false",
 		"runtime_link%": "shared",
 		"enable_logging%": "false",
 		"enable_asan%": "false",
 		"enable_coverage%": "false",
+		# Electron's executable is not named node.exe, so a Windows addon built for
+		# Electron must link node-gyp's delay-load hook to bind its V8/Node imports
+		# to the host process. Without it Windows resolves the imports against any
+		# node.exe on PATH ("The specified procedure could not be found").
+		# Node.js builds keep the hook disabled (node10-era workaround, 4c86f3473).
+		"conditions": [
+			["runtime == 'electron'", {
+				"gdal_win_delay_load_hook": "true"
+			}, {
+				"gdal_win_delay_load_hook": "false"
+			}]
+		],
 		"sources_node_gdal": [
 				"src/utils/typed_array.cpp",
 				"src/utils/string_list.cpp",
@@ -105,7 +123,7 @@
 		{
 			"target_name": "gdal",
 			"type": "loadable_module",
-			"win_delay_load_hook": "false",
+			"win_delay_load_hook": "<(gdal_win_delay_load_hook)",
 			"product_prefix": "",
 			"product_extension": "node",
 			"sources": [ "<@(sources_node_gdal)" ],
