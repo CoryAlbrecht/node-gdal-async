@@ -666,7 +666,17 @@ static void callJSpfn(uv_async_t *async) {
   Nan::TryCatch try_catch;
   // async_hooks do not make any sense for pixel functions
   Nan::Call(*fn->fn, 5, args);
-  if (try_catch.HasCaught()) fn->call.err = new Nan::Utf8String(try_catch.Message()->Get());
+  if (try_catch.HasCaught()) {
+    fn->call.err = new Nan::Utf8String(try_catch.Message()->Get());
+  } else {
+    // TypedArray::New copies GDAL's buffer into the V8 sandbox (external
+    // backing stores are forbidden there), so the JS function wrote into a
+    // copy: copy the result back into GDAL's destination buffer.
+    TypedArrayContents<uint8_t> result(destination);
+    size_t bytes = len * GDALGetDataTypeSizeBytes(fn->call.outType);
+    if (result.length() < bytes) bytes = result.length();
+    if (*result != nullptr && bytes > 0) memcpy(fn->call.destination, *result, bytes);
+  }
 
   // unlock the worker thread (the function below)
   uv_sem_post(&fn->returnJS);
